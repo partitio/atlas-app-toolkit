@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,9 +17,12 @@ type TestObject struct {
 }
 
 type TestProtoMessage struct {
-	Str    string         `protobuf:"bytes,1,opt,name=str"`
-	Int    int32          `protobuf:"varint,2,opt,name=int"`
-	Nested *NestedMessage `protobuf:"bytes,3,opt,name=nested,json=nestedJSON"`
+	StringValue *wrappers.StringValue `protobuf:"bytes,1,opt,name=string_value,proto3" json:"id,omitempty"`
+	IntValue    *wrappers.Int64Value  `protobuf:"bytes,1,opt,name=int_value,proto3" json:"id,omitempty"`
+	Str         string                `protobuf:"bytes,1,opt,name=str"`
+	Int         int32                 `protobuf:"varint,2,opt,name=int"`
+	Nested      *NestedMessage        `protobuf:"bytes,3,opt,name=nested,json=nestedJSON"`
+	Enum        Enum                  `protobuf:"varint,6,opt,name=enum,proto3,enum=query.Enum" json:"enum,omitempty"`
 }
 
 func (m *TestProtoMessage) Reset()         { *m = TestProtoMessage{} }
@@ -33,6 +37,27 @@ func (m *NestedMessage) Reset()         { *m = NestedMessage{} }
 func (m *NestedMessage) String() string { return proto.CompactTextString(m) }
 func (*NestedMessage) ProtoMessage()    {}
 
+type Enum int32
+
+const (
+	ENUM_ONE Enum = 0
+	ENUM_TwO Enum = 1
+)
+
+var Enum_name = map[int32]string{
+	0: "ONE",
+	1: "TW0",
+}
+
+var Enum_value = map[string]int32{
+	"ONE": 0,
+	"TW0": 1,
+}
+
+func (x Enum) String() string {
+	return proto.EnumName(Enum_name, int32(x))
+}
+
 func TestFiltering(t *testing.T) {
 
 	tests := []struct {
@@ -41,13 +66,19 @@ func TestFiltering(t *testing.T) {
 		res    bool
 	}{
 		{
-			obj:    &TestObject{Str: "111", Float: 11.11, Uint: 11},
-			filter: "str == '111' and float == 11.11 and uint == 11 and Ptr == null",
+			obj: &TestProtoMessage{
+				Str:         "111",
+				Int:         111,
+				StringValue: &wrappers.StringValue{Value: "111"},
+				IntValue:    &wrappers.Int64Value{Value: 111},
+				Enum:        ENUM_TwO,
+			},
+			filter: "enum == 1 and string_value == '111' and int_value == 111 and str == '111' and int == 111 and nestedJSON == null",
 			res:    true,
 		},
 		{
-			obj:    &TestProtoMessage{Str: "111", Int: 111},
-			filter: "str == '111' and int == 111 and nestedJSON == null",
+			obj:    &TestObject{Str: "111", Float: 11.11, Uint: 11},
+			filter: "str == '111' and float == 11.11 and uint == 11 and Ptr == null",
 			res:    true,
 		},
 		{
@@ -176,7 +207,6 @@ func TestFiltering(t *testing.T) {
 			res:    true,
 		},
 	}
-
 	for _, test := range tests {
 		res, err := Filter(test.obj, test.filter)
 		assert.Equal(t, res, test.res)

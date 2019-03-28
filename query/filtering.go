@@ -233,12 +233,17 @@ func floatInSlice(digit float64, slice []float64) bool {
 }
 
 func fieldByFieldPath(obj interface{}, fieldPath []string) reflect.Value {
+	var v reflect.Value
 	switch obj.(type) {
 	case proto.Message:
-		return fieldByProtoPath(obj, fieldPath)
+		v = fieldByProtoPath(obj, fieldPath)
 	default:
-		return fieldByJSONPath(obj, fieldPath)
+		v = fieldByJSONPath(obj, fieldPath)
 	}
+	if v, ok := wrappedValue(v); ok {
+		return v
+	}
+	return v
 }
 
 func fieldByProtoPath(obj interface{}, protoPath []string) reflect.Value {
@@ -281,6 +286,19 @@ func dereferenceValue(value reflect.Value) reflect.Value {
 		kind = value.Kind()
 	}
 	return value
+}
+
+var wrapRegEx = regexp.MustCompile("^wrappers.(String|UInt|Int|Float|Double|Bool|Byte)(16|32|64)?Value$")
+
+func wrappedValue(v reflect.Value) (reflect.Value, bool) {
+	o := v
+	if o.Kind() == reflect.Ptr && !o.IsNil() {
+		o = v.Elem()
+	}
+	if !o.IsValid() || !wrapRegEx.MatchString(o.Type().String()) {
+		return v, false
+	}
+	return o.FieldByName("Value"), true
 }
 
 func negateIfNeeded(neg bool, value bool) bool {

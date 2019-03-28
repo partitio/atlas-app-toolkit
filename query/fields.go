@@ -1,7 +1,11 @@
 package query
 
 import (
+	"errors"
 	"strings"
+
+	"github.com/golang/protobuf/protoc-gen-go/generator"
+	fieldmask "google.golang.org/genproto/protobuf/field_mask"
 )
 
 const (
@@ -139,4 +143,29 @@ func (f *FieldSelection) Get(field string, delimiter ...string) *Field {
 		}
 	}
 	return tmp[name]
+}
+
+func FieldSelectionToFieldMask(fs *FieldSelection) (*fieldmask.FieldMask, error) {
+	if fs == nil {
+		return nil, errors.New("FieldSelection cannot be nil")
+	}
+	return &fieldmask.FieldMask{Paths: join("", fs.Fields)}, nil
+}
+
+func join(prefix string, f map[string]*Field) (fields []string) {
+	for _, v := range f {
+		var n string
+		if n == "" {
+			n = v.Name
+		} else {
+			n = prefix + "." + v.Name
+		}
+		n = generator.CamelCase(n)
+		if len(v.Subs) > 0 {
+			fields = append(join(n, v.Subs))
+		} else {
+			fields = append(fields, n)
+		}
+	}
+	return
 }
