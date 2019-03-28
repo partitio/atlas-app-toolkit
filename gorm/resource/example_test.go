@@ -3,8 +3,8 @@ package resource
 import (
 	"fmt"
 
-	resourcepb "github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
-	"github.com/infobloxopen/atlas-app-toolkit/util"
+	resourcepb "github.com/partitio/atlas-app-toolkit/rpc/resource"
+	"github.com/partitio/atlas-app-toolkit/util"
 )
 
 type ExampleGoType struct {

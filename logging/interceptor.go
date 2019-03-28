@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
-	"github.com/infobloxopen/atlas-app-toolkit/gateway"
+	"github.com/partitio/atlas-app-toolkit/gateway"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )

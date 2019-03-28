@@ -1,5 +1,5 @@
 # Absolute github repository name.
-REPO := github.com/infobloxopen/atlas-app-toolkit
+REPO := github.com/partitio/atlas-app-toolkit
 
 # Build directory absolute path.
 PROJECT_ROOT = $(CURDIR)

@@ -8,7 +8,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/jinzhu/gorm"
 
-	"github.com/infobloxopen/atlas-app-toolkit/query"
+	"github.com/partitio/atlas-app-toolkit/query"
 )
 
 // ApplyCollectionOperators applies collection operators to gorm instance db.

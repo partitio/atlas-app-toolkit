@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/protoc-gen-go/generator"
-	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/jinzhu/gorm"
+	"github.com/partitio/atlas-app-toolkit/query"
 )
 
 // FieldSelectionStringToGorm is a shortcut to parse a string into FieldSelection struct and

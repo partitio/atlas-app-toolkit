@@ -2,7 +2,7 @@ package integration
 
 import (
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/infobloxopen/atlas-app-toolkit/auth"
+	"github.com/partitio/atlas-app-toolkit/auth"
 )
 
 const (

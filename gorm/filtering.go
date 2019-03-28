@@ -10,8 +10,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/generator"
 
-	"github.com/infobloxopen/atlas-app-toolkit/query"
-	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
+	"github.com/partitio/atlas-app-toolkit/query"
+	"github.com/partitio/atlas-app-toolkit/rpc/resource"
 )
 
 // FilterStringToGorm is a shortcut to parse a filter string using default FilteringParser implementation
