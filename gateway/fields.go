@@ -16,7 +16,7 @@ func retainFields(ctx context.Context, req *http.Request, dynmap map[string]inte
 	if req != nil {
 		//no fields in gprc response -> try to get from original testRequest
 		vals := req.URL.Query()
-		fieldsStr = vals.Get(fieldsQueryKey)
+		fieldsStr = vals.Get(FieldsQueryKey)
 	}
 
 	if fieldsStr == "" {
