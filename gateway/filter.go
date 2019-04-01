@@ -9,10 +9,10 @@ var DefaultQueryFilter = utilities.NewDoubleArray(defaultFilterFields)
 
 var defaultFilterFields = [][]string{
 	// collection ops and the expected names used for the collection ops objects in requests
-	{"paging"}, {limitQueryKey}, {offsetQueryKey}, {pageTokenQueryKey},
-	{"order_by"}, {sortQueryKey},
-	{"fields"}, {fieldsQueryKey},
-	{"filter"}, {filterQueryKey},
+	{"paging"}, {LimitQueryKey}, {OffsetQueryKey}, {PageTokenQueryKey},
+	{"order_by"}, {SortQueryKey},
+	{"fields"}, {FieldsQueryKey},
+	{"filter"}, {FilterQueryKey},
 }
 
 // QueryFilterWith will add extra fields to the standard fields in the default

@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/partitio/atlas-app-toolkit/query"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -41,51 +40,7 @@ func ClientUnaryInterceptor(parentCtx context.Context, method string, req, reply
 			return status.Error(codes.InvalidArgument, err.Error())
 		}
 		vals := request.Query()
-		// extracts "_order_by" parameters from request
-		if v := vals.Get(sortQueryKey); v != "" {
-			s, err := query.ParseSorting(v)
-			if err != nil {
-				return status.Error(codes.InvalidArgument, err.Error())
-			}
-			err = SetCollectionOps(req, s)
-			if err != nil {
-				return err
-			}
-		}
-		// extracts "_fields" parameters from request
-		if v := vals.Get(fieldsQueryKey); v != "" {
-			fs := query.ParseFieldSelection(v)
-			err := SetCollectionOps(req, fs)
-			if err != nil {
-				return err
-			}
-		}
-
-		// extracts "_filter" parameters from request
-		if v := vals.Get(filterQueryKey); v != "" {
-			f, err := query.ParseFiltering(v)
-			if err != nil {
-				return status.Error(codes.InvalidArgument, err.Error())
-			}
-
-			err = SetCollectionOps(req, f)
-			if err != nil {
-				return err
-			}
-		}
-
-		// extracts "_limit", "_offset",  "_page_token" parameters from request
-		var p *query.Pagination
-		l := vals.Get(limitQueryKey)
-		o := vals.Get(offsetQueryKey)
-		pt := vals.Get(pageTokenQueryKey)
-
-		p, err = query.ParsePagination(l, o, pt)
-		if err != nil {
-			return status.Error(codes.InvalidArgument, err.Error())
-		}
-		err = SetCollectionOps(req, p)
-		if err != nil {
+		if err := ParseQuery(req, vals); err != nil {
 			return err
 		}
 	}
