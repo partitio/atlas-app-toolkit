@@ -16,7 +16,7 @@ test: check-fmt vendor
 
 .PHONY: vendor
 vendor:
-	dep ensure
+	go mod vendor
 
 check-fmt:
 	test -z `go fmt ./...`
