@@ -11,6 +11,27 @@ import (
 	"google.golang.org/grpc/grpclog"
 )
 
+// ParseQueryParameters is a middleware for github.com/partitio/micro-gateway
+// It parse collection operators query arguments to collection operators proto
+// Usage :
+// mux := runtime.NewServeMux(
+//     runtime.WithQueryParameterParser(ParseQueryParameters),
+// )
+func ParseQueryParameters(req proto.Message, vals url.Values) (map[string]bool, error) {
+	handled := map[string]bool{
+		gateway.SortQueryKey:      true,
+		gateway.FieldsQueryKey:    true,
+		gateway.FilterQueryKey:    true,
+		gateway.LimitQueryKey:     true,
+		gateway.OffsetQueryKey:    true,
+		gateway.PageTokenQueryKey: true,
+	}
+	if err := gateway.ParseQuery(req, vals); err != nil {
+		return handled, err
+	}
+	return handled, nil
+}
+
 // UnaryServerInterceptor returns grpc.UnaryServerInterceptor
 // that should be used as a middleware if an user's request message
 // defines any of collection operators.
