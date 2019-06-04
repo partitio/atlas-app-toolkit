@@ -12,11 +12,11 @@ GENTOOL_IMAGE := infoblox/atlas-gentool:latest
 default: test
 
 test: check-fmt vendor
-	go test -cover ./...
+	GO111MODULE=on go test -mod=vendor -cover ./...
 
 .PHONY: vendor
 vendor:
-	go mod vendor
+	GO111MODULE=on go mod vendor
 
 check-fmt:
 	test -z `go fmt ./...`
