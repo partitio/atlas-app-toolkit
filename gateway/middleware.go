@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"reflect"
 
 	"github.com/golang/protobuf/proto"
@@ -19,14 +20,14 @@ import (
 // )
 func ParseQueryParameters(req proto.Message, vals url.Values) (map[string]bool, error) {
 	handled := map[string]bool{
-		gateway.SortQueryKey:      true,
-		gateway.FieldsQueryKey:    true,
-		gateway.FilterQueryKey:    true,
-		gateway.LimitQueryKey:     true,
-		gateway.OffsetQueryKey:    true,
-		gateway.PageTokenQueryKey: true,
+		SortQueryKey:      true,
+		FieldsQueryKey:    true,
+		FilterQueryKey:    true,
+		LimitQueryKey:     true,
+		OffsetQueryKey:    true,
+		PageTokenQueryKey: true,
 	}
-	if err := gateway.ParseQuery(req, vals); err != nil {
+	if err := ParseQuery(req, vals); err != nil {
 		return handled, err
 	}
 	return handled, nil
