@@ -220,14 +220,14 @@ func TestGormFiltering(t *testing.T) {
 		},
 		{
 			"id := 'ID'",
-			"(lower(entities.id) = lower(?))",
+			"(lower(entities.id) LIKE lower(?))",
 			[]interface{}{"convertedid"},
 			nil,
 			nil,
 		},
 		{
 			"not(id := 'sOmeId')",
-			"NOT(lower(entities.id) = lower(?))",
+			"NOT(lower(entities.id) LIKE lower(?))",
 			[]interface{}{"convertedid"},
 			nil,
 			nil,
