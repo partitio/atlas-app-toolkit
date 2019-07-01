@@ -173,14 +173,14 @@ func StringConditionToGorm(ctx context.Context, c *query.StringCondition, obj in
 	}
 
 	if c.Type == query.StringCondition_IEQ {
-		return insensitiveCaseStringConditionToGorm(neg, dbName, o), []interface{}{value}, assocToJoin, nil
+		return insensitiveCaseStringConditionToGorm(neg, dbName), []interface{}{value}, assocToJoin, nil
 	}
 
 	return fmt.Sprintf("%s(%s %s ?)", neg, dbName, o), []interface{}{value}, assocToJoin, nil
 }
 
-func insensitiveCaseStringConditionToGorm(neg, dbName, operator string) string {
-	return fmt.Sprintf("%s(lower(%s) %s lower(?))", neg, dbName, operator)
+func insensitiveCaseStringConditionToGorm(neg, dbName string) string {
+	return fmt.Sprintf("%s(lower(%s) LIKE lower(?))", neg, dbName)
 }
 
 func processStringCondition(ctx context.Context, fieldPath []string, value string, pb proto.Message) (interface{}, error) {
