@@ -42,6 +42,8 @@ func FilteringToGorm(ctx context.Context, m *query.Filtering, obj interface{}, p
 		return NumberArrayConditionToGorm(ctx, r.NumberArrayCondition, obj, pb)
 	case *query.Filtering_StringArrayCondition:
 		return StringArrayConditionToGorm(ctx, r.StringArrayCondition, obj, pb)
+	case *query.Filtering_BoolCondition:
+		return BoolConditionToGorm(ctx, r.BoolCondition, obj, pb)
 	default:
 		return "", nil, nil, fmt.Errorf("%T type is not supported in Filtering", r)
 	}
@@ -277,6 +279,27 @@ func NullConditionToGorm(ctx context.Context, c *query.NullCondition, obj interf
 	return fmt.Sprintf("%s(%s %s)", neg, dbName, o), nil, assocToJoin, nil
 }
 
+// BoolConditionToGorm returns GORM Plain SQL representation of the bool condition.
+func BoolConditionToGorm(ctx context.Context, c *query.BoolCondition, obj interface{}, pb proto.Message) (string, []interface{}, map[string]struct{}, error) {
+	var assocToJoin map[string]struct{}
+	dbName, assoc, err := HandleFieldPath(ctx, c.FieldPath, obj)
+	if err != nil {
+		return "", nil, nil, err
+	}
+	if assoc != "" {
+		assocToJoin = make(map[string]struct{})
+		assocToJoin[assoc] = struct{}{}
+	}
+	o := ""
+	if !c.Value {
+		o = "NOT "
+	}
+	var neg string
+	if c.IsNegative {
+		neg = "NOT"
+	}
+	return fmt.Sprintf("%s(%s%s)", neg, o, dbName), nil, assocToJoin, nil
+}
 func NumberArrayConditionToGorm(ctx context.Context, c *query.NumberArrayCondition, obj interface{}, pb proto.Message) (string, []interface{}, map[string]struct{}, error) {
 	var assocToJoin map[string]struct{}
 	dbName, assoc, err := HandleFieldPath(ctx, c.FieldPath, obj)

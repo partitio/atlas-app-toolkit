@@ -198,6 +198,27 @@ func TestGormFiltering(t *testing.T) {
 			nil,
 		},
 		{
+			"field1 == true",
+			"(entities.field1)",
+			nil,
+			nil,
+			nil,
+		},
+		{
+			"field1 != true",
+			"NOT(entities.field1)",
+			nil,
+			nil,
+			nil,
+		},
+		{
+			"field1 != false",
+			"NOT(NOT entities.field1)",
+			nil,
+			nil,
+			nil,
+		},
+		{
 			"nested_entity.nested_field1 == 11 and nested_entity.nested_field2 == 22",
 			"((nested_entity.nested_field1 = ?) AND (nested_entity.nested_field2 = ?))",
 			[]interface{}{11.0, 22.0},
