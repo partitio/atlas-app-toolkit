@@ -148,7 +148,7 @@ func StringConditionToGorm(ctx context.Context, c *query.StringCondition, obj in
 	var o string
 	switch c.Type {
 	case query.StringCondition_EQ, query.StringCondition_IEQ:
-		o = "="
+		o = "LIKE"
 	case query.StringCondition_MATCH:
 		o = "~"
 	case query.StringCondition_GT:
