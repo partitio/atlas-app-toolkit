@@ -3,6 +3,7 @@ package query
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -72,6 +73,15 @@ type NumberToken struct {
 
 func (t NumberToken) String() string {
 	return fmt.Sprint(t.Value)
+}
+
+type BoolToken struct {
+	TokenBase
+	Value bool
+}
+
+func (t BoolToken) String() string {
+	return fmt.Sprintf("%t", t.Value)
 }
 
 // StringToken represents a string literal.
@@ -405,7 +415,7 @@ func (lexer *filteringLexer) fieldOrReserved() (Token, error) {
 		}
 		lexer.advance()
 	}
-	switch s {
+	switch strings.ToLower(s) {
 	case "and":
 		return AndToken{}, nil
 	case "or":
@@ -434,6 +444,9 @@ func (lexer *filteringLexer) fieldOrReserved() (Token, error) {
 		return InToken{}, nil
 	case "ieq":
 		return InsensitiveEqToken{}, nil
+	case "true", "false":
+		v, _ := strconv.ParseBool(s)
+		return BoolToken{Value: v}, nil
 	default:
 		return FieldToken{Value: s}, nil
 	}

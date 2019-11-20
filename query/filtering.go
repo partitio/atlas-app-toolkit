@@ -175,6 +175,14 @@ func (c *NullCondition) Filter(obj interface{}) (bool, error) {
 	return negateIfNeeded(fv.IsNil(), c.IsNegative), nil
 }
 
+func (c *BoolCondition) Filter(obj interface{}) (bool, error) {
+	fv := fieldByFieldPath(obj, c.FieldPath)
+	if fv.Kind() != reflect.Bool {
+		return false, &TypeMismatchError{"bool", c.FieldPath}
+	}
+	return negateIfNeeded(c.IsNegative, fv.Bool() == c.Value), nil
+}
+
 func (c *StringArrayCondition) Filter(obj interface{}) (bool, error) {
 	fv := fieldByFieldPath(obj, c.FieldPath)
 	fv = dereferenceValue(fv)
@@ -324,6 +332,10 @@ func (m *Filtering_NullCondition) Filter(obj interface{}) (bool, error) {
 	return m.NullCondition.Filter(obj)
 }
 
+func (m *Filtering_BoolCondition) Filter(obj interface{}) (bool, error) {
+	return m.BoolCondition.Filter(obj)
+}
+
 func (m *Filtering_StringArrayCondition) Filter(obj interface{}) (bool, error) {
 	return m.StringArrayCondition.Filter(obj)
 }
@@ -347,7 +359,9 @@ func (m *LogicalOperator_LeftNumberCondition) Filter(obj interface{}) (bool, err
 func (m *LogicalOperator_LeftNullCondition) Filter(obj interface{}) (bool, error) {
 	return m.LeftNullCondition.Filter(obj)
 }
-
+func (m *LogicalOperator_LeftBoolCondition) Filter(obj interface{}) (bool, error) {
+	return m.LeftBoolCondition.Filter(obj)
+}
 func (m *LogicalOperator_LeftStringArrayCondition) Filter(obj interface{}) (bool, error) {
 	return m.LeftStringArrayCondition.Filter(obj)
 }
@@ -372,6 +386,9 @@ func (m *LogicalOperator_RightNullCondition) Filter(obj interface{}) (bool, erro
 	return m.RightNullCondition.Filter(obj)
 }
 
+func (m *LogicalOperator_RightBoolCondition) Filter(obj interface{}) (bool, error) {
+	return m.RightBoolCondition.Filter(obj)
+}
 func (m *LogicalOperator_RightStringArrayCondition) Filter(obj interface{}) (bool, error) {
 	return m.RightStringArrayCondition.Filter(obj)
 }
@@ -395,6 +412,8 @@ func (m *Filtering) SetRoot(r interface{}) error {
 		m.Root = &Filtering_StringArrayCondition{x}
 	case *NumberArrayCondition:
 		m.Root = &Filtering_NumberArrayCondition{x}
+	case *BoolCondition:
+		m.Root = &Filtering_BoolCondition{x}
 	case nil:
 		m.Root = nil
 	default:

@@ -239,6 +239,50 @@ func TestFilteringParser(t *testing.T) {
 			},
 		},
 		{
+			text: "field == true",
+			exp: &Filtering{
+				&Filtering_BoolCondition{
+					&BoolCondition{
+						IsNegative: false,
+						FieldPath:  []string{"field"},
+						Value:      true,
+					},
+				}},
+		},
+		{
+			text: "field == false",
+			exp: &Filtering{
+				&Filtering_BoolCondition{
+					&BoolCondition{
+						IsNegative: false,
+						FieldPath:  []string{"field"},
+						Value:      false,
+					},
+				}},
+		},
+		{
+			text: "field != true",
+			exp: &Filtering{
+				&Filtering_BoolCondition{
+					&BoolCondition{
+						IsNegative: true,
+						FieldPath:  []string{"field"},
+						Value:      true,
+					},
+				}},
+		},
+		{
+			text: "field != false",
+			exp: &Filtering{
+				&Filtering_BoolCondition{
+					&BoolCondition{
+						IsNegative: true,
+						FieldPath:  []string{"field"},
+						Value:      false,
+					},
+				}},
+		},
+		{
 			text: "field != \"abc cde\"",
 			exp: &Filtering{
 				&Filtering_StringCondition{

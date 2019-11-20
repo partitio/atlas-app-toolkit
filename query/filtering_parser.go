@@ -40,7 +40,7 @@ type filteringParser struct {
 // expr      : term (OR term)*
 // term      : factor (AND factor)*
 // factor    : ?NOT (LPAREN expr RPAREN | condition)
-// condition : FIELD ((== | !=) (STRING | NUMBER | NULL) | (~ | !~) STRING | (> | >= | < | <=) (NUMBER | STRING).
+// condition : FIELD ((== | !=) (STRING | NUMBER | NULL | BOOL) | (~ | !~) STRING | (> | >= | < | <=) (NUMBER | STRING).
 func (p *filteringParser) Parse(text string) (*Filtering, error) {
 	p.lexer = NewFilteringLexer(text)
 	token, err := p.lexer.NextToken()
@@ -82,6 +82,8 @@ func (p *filteringParser) negateNode(node FilteringExpression) {
 	case *StringArrayCondition:
 		v.IsNegative = !v.IsNegative
 	case *NumberArrayCondition:
+		v.IsNegative = !v.IsNegative
+	case *BoolCondition:
 		v.IsNegative = !v.IsNegative
 	}
 }
@@ -237,6 +239,15 @@ func (p *filteringParser) condition() (FilteringExpression, error) {
 				FieldPath:  strings.Split(field.Value, "."),
 				IsNegative: false,
 			}, nil
+		case BoolToken:
+			if err := p.eatToken(); err != nil {
+				return nil, err
+			}
+			return &BoolCondition{
+				FieldPath:  strings.Split(field.Value, "."),
+				IsNegative: false,
+				Value:      token.Value,
+			}, nil
 		default:
 			return nil, &UnexpectedTokenError{p.curToken}
 		}
@@ -272,6 +283,15 @@ func (p *filteringParser) condition() (FilteringExpression, error) {
 			return &NullCondition{
 				FieldPath:  strings.Split(field.Value, "."),
 				IsNegative: true,
+			}, nil
+		case BoolToken:
+			if err := p.eatToken(); err != nil {
+				return nil, err
+			}
+			return &BoolCondition{
+				FieldPath:  strings.Split(field.Value, "."),
+				IsNegative: true,
+				Value:      token.Value,
 			}, nil
 		default:
 			return nil, &UnexpectedTokenError{p.curToken}
