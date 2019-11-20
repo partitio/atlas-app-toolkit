@@ -64,10 +64,13 @@ func LogicalOperatorToGorm(ctx context.Context, lop *query.LogicalOperator, obj 
 		lres, largs, lAssocToJoin, err = NumberConditionToGorm(ctx, l.LeftNumberCondition, obj, pb)
 	case *query.LogicalOperator_LeftNullCondition:
 		lres, largs, lAssocToJoin, err = NullConditionToGorm(ctx, l.LeftNullCondition, obj, pb)
+	case *query.LogicalOperator_LeftBoolCondition:
+		lres, largs, lAssocToJoin, err = BoolConditionToGorm(ctx, l.LeftBoolCondition, obj, pb)
 	case *query.LogicalOperator_LeftNumberArrayCondition:
 		lres, largs, lAssocToJoin, err = NumberArrayConditionToGorm(ctx, l.LeftNumberArrayCondition, obj, pb)
 	case *query.LogicalOperator_LeftStringArrayCondition:
 		lres, largs, lAssocToJoin, err = StringArrayConditionToGorm(ctx, l.LeftStringArrayCondition, obj, pb)
+
 	default:
 		return "", nil, nil, fmt.Errorf("%T type is not supported in Filtering", l)
 	}
@@ -87,6 +90,8 @@ func LogicalOperatorToGorm(ctx context.Context, lop *query.LogicalOperator, obj 
 		rres, rargs, rAssocToJoin, err = NumberConditionToGorm(ctx, r.RightNumberCondition, obj, pb)
 	case *query.LogicalOperator_RightNullCondition:
 		rres, rargs, rAssocToJoin, err = NullConditionToGorm(ctx, r.RightNullCondition, obj, pb)
+	case *query.LogicalOperator_RightBoolCondition:
+		rres, rargs, rAssocToJoin, err = BoolConditionToGorm(ctx, r.RightBoolCondition, obj, pb)
 	case *query.LogicalOperator_RightNumberArrayCondition:
 		rres, rargs, rAssocToJoin, err = NumberArrayConditionToGorm(ctx, r.RightNumberArrayCondition, obj, pb)
 	case *query.LogicalOperator_RightStringArrayCondition:
