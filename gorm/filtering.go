@@ -42,6 +42,8 @@ func FilteringToGorm(ctx context.Context, m *query.Filtering, obj interface{}, p
 		return NumberArrayConditionToGorm(ctx, r.NumberArrayCondition, obj, pb)
 	case *query.Filtering_StringArrayCondition:
 		return StringArrayConditionToGorm(ctx, r.StringArrayCondition, obj, pb)
+	case *query.Filtering_BoolCondition:
+		return BoolConditionToGorm(ctx, r.BoolCondition, obj, pb)
 	default:
 		return "", nil, nil, fmt.Errorf("%T type is not supported in Filtering", r)
 	}
@@ -62,10 +64,13 @@ func LogicalOperatorToGorm(ctx context.Context, lop *query.LogicalOperator, obj 
 		lres, largs, lAssocToJoin, err = NumberConditionToGorm(ctx, l.LeftNumberCondition, obj, pb)
 	case *query.LogicalOperator_LeftNullCondition:
 		lres, largs, lAssocToJoin, err = NullConditionToGorm(ctx, l.LeftNullCondition, obj, pb)
+	case *query.LogicalOperator_LeftBoolCondition:
+		lres, largs, lAssocToJoin, err = BoolConditionToGorm(ctx, l.LeftBoolCondition, obj, pb)
 	case *query.LogicalOperator_LeftNumberArrayCondition:
 		lres, largs, lAssocToJoin, err = NumberArrayConditionToGorm(ctx, l.LeftNumberArrayCondition, obj, pb)
 	case *query.LogicalOperator_LeftStringArrayCondition:
 		lres, largs, lAssocToJoin, err = StringArrayConditionToGorm(ctx, l.LeftStringArrayCondition, obj, pb)
+
 	default:
 		return "", nil, nil, fmt.Errorf("%T type is not supported in Filtering", l)
 	}
@@ -85,6 +90,8 @@ func LogicalOperatorToGorm(ctx context.Context, lop *query.LogicalOperator, obj 
 		rres, rargs, rAssocToJoin, err = NumberConditionToGorm(ctx, r.RightNumberCondition, obj, pb)
 	case *query.LogicalOperator_RightNullCondition:
 		rres, rargs, rAssocToJoin, err = NullConditionToGorm(ctx, r.RightNullCondition, obj, pb)
+	case *query.LogicalOperator_RightBoolCondition:
+		rres, rargs, rAssocToJoin, err = BoolConditionToGorm(ctx, r.RightBoolCondition, obj, pb)
 	case *query.LogicalOperator_RightNumberArrayCondition:
 		rres, rargs, rAssocToJoin, err = NumberArrayConditionToGorm(ctx, r.RightNumberArrayCondition, obj, pb)
 	case *query.LogicalOperator_RightStringArrayCondition:
@@ -277,6 +284,27 @@ func NullConditionToGorm(ctx context.Context, c *query.NullCondition, obj interf
 	return fmt.Sprintf("%s(%s %s)", neg, dbName, o), nil, assocToJoin, nil
 }
 
+// BoolConditionToGorm returns GORM Plain SQL representation of the bool condition.
+func BoolConditionToGorm(ctx context.Context, c *query.BoolCondition, obj interface{}, pb proto.Message) (string, []interface{}, map[string]struct{}, error) {
+	var assocToJoin map[string]struct{}
+	dbName, assoc, err := HandleFieldPath(ctx, c.FieldPath, obj)
+	if err != nil {
+		return "", nil, nil, err
+	}
+	if assoc != "" {
+		assocToJoin = make(map[string]struct{})
+		assocToJoin[assoc] = struct{}{}
+	}
+	o := ""
+	if !c.Value {
+		o = "NOT "
+	}
+	var neg string
+	if c.IsNegative {
+		neg = "NOT"
+	}
+	return fmt.Sprintf("%s(%s%s)", neg, o, dbName), nil, assocToJoin, nil
+}
 func NumberArrayConditionToGorm(ctx context.Context, c *query.NumberArrayCondition, obj interface{}, pb proto.Message) (string, []interface{}, map[string]struct{}, error) {
 	var assocToJoin map[string]struct{}
 	dbName, assoc, err := HandleFieldPath(ctx, c.FieldPath, obj)

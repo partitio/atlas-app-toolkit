@@ -21,6 +21,7 @@ type TestProtoMessage struct {
 	IntValue    *wrappers.Int64Value  `protobuf:"bytes,1,opt,name=int_value,proto3" json:"id,omitempty"`
 	Str         string                `protobuf:"bytes,1,opt,name=str"`
 	Int         int32                 `protobuf:"varint,2,opt,name=int"`
+	Bool        bool                  `protobuf:"bytes,3,opt,name=bool,proto3" json:"id,omitempty"`
 	Nested      *NestedMessage        `protobuf:"bytes,3,opt,name=nested,json=nestedJSON"`
 	Enum        Enum                  `protobuf:"varint,6,opt,name=enum,proto3,enum=query.Enum" json:"enum,omitempty"`
 }
@@ -200,6 +201,27 @@ func TestFiltering(t *testing.T) {
 			obj:    &TestProtoMessage{Nested: &NestedMessage{}},
 			filter: "nestedJSON == null",
 			res:    false,
+		},
+		{
+			obj: &TestProtoMessage{
+				Bool: true,
+			},
+			filter: "bool == true",
+			res:    true,
+		},
+		{
+			obj: &TestProtoMessage{
+				Bool: true,
+			},
+			filter: "bool == false",
+			res:    false,
+		},
+		{
+			obj: &TestProtoMessage{
+				Bool: false,
+			},
+			filter: "bool != true",
+			res:    true,
 		},
 		{
 			obj:    &TestProtoMessage{},

@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/jinzhu/gorm/dialects/postgres"
@@ -198,6 +199,34 @@ func TestGormFiltering(t *testing.T) {
 			nil,
 		},
 		{
+			"field1 == true",
+			"(entities.field1)",
+			nil,
+			nil,
+			nil,
+		},
+		{
+			"field1 != true",
+			"NOT(entities.field1)",
+			nil,
+			nil,
+			nil,
+		},
+		{
+			"field1 != false",
+			"NOT(NOT entities.field1)",
+			nil,
+			nil,
+			nil,
+		},
+		{
+			"field1 != false and field2 == true",
+			"(NOT(NOT entities.field1) AND (entities.field2))",
+			nil,
+			nil,
+			nil,
+		},
+		{
 			"nested_entity.nested_field1 == 11 and nested_entity.nested_field2 == 22",
 			"((nested_entity.nested_field1 = ?) AND (nested_entity.nested_field2 = ?))",
 			[]interface{}{11.0, 22.0},
@@ -330,6 +359,9 @@ func TestGormFiltering(t *testing.T) {
 		assert.Equal(t, test.gorm, gorm)
 		assert.Equal(t, test.args, args)
 		assert.Equal(t, test.assoc, assoc)
+		if err != nil {
+			fmt.Printf(err.Error())
+		}
 		assert.IsType(t, test.err, err)
 	}
 }
