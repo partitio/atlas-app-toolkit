@@ -408,12 +408,12 @@ func (m *Filtering) SetRoot(r interface{}) error {
 		m.Root = &Filtering_NumberCondition{x}
 	case *NullCondition:
 		m.Root = &Filtering_NullCondition{x}
+	case *BoolCondition:
+		m.Root = &Filtering_BoolCondition{x}
 	case *StringArrayCondition:
 		m.Root = &Filtering_StringArrayCondition{x}
 	case *NumberArrayCondition:
 		m.Root = &Filtering_NumberArrayCondition{x}
-	case *BoolCondition:
-		m.Root = &Filtering_BoolCondition{x}
 	case nil:
 		m.Root = nil
 	default:
@@ -433,6 +433,8 @@ func (m *LogicalOperator) SetLeft(l interface{}) error {
 		m.Left = &LogicalOperator_LeftNumberCondition{x}
 	case *NullCondition:
 		m.Left = &LogicalOperator_LeftNullCondition{x}
+	case *BoolCondition:
+		m.Left = &LogicalOperator_LeftBoolCondition{x}
 	case *StringArrayCondition:
 		m.Left = &LogicalOperator_LeftStringArrayCondition{x}
 	case *NumberArrayCondition:
@@ -456,6 +458,8 @@ func (m *LogicalOperator) SetRight(r interface{}) error {
 		m.Right = &LogicalOperator_RightNumberCondition{x}
 	case *NullCondition:
 		m.Right = &LogicalOperator_RightNullCondition{x}
+	case *BoolCondition:
+		m.Right = &LogicalOperator_RightBoolCondition{x}
 	case *StringArrayCondition:
 		m.Right = &LogicalOperator_RightStringArrayCondition{x}
 	case *NumberArrayCondition:
