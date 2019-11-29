@@ -56,6 +56,9 @@ fields:
 			if ok, flag := gormTag(&sf, "preload"); ok && flag == "false" {
 				continue
 			}
+			if ok, _ := gormTag(&sf, "embedded"); ok {
+				continue
+			}
 			subPreload, err := preloadEverything(fType, append(path, objType))
 			if err != nil {
 				return nil, err
