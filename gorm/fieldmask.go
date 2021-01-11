@@ -11,7 +11,12 @@ import (
 
 // MergeWithMask will take the fields of `source` that are included as
 // paths in `mask` and write them to the corresponding fields of `dest`
-func MergeWithMask(source, dest interface{}, mask *fieldmask.FieldMask) error {
+func MergeWithMask(source, dest interface{}, mask *fieldmask.FieldMask) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
+		}
+	}()
 	if mask == nil || len(mask.Paths) == 0 {
 		return nil
 	}
@@ -49,6 +54,9 @@ pathsloop:
 			}
 		}
 		for dstVal.Kind() == reflect.Ptr {
+			if srcVal.IsNil() {
+				continue pathsloop
+			}
 			if dstVal.IsNil() {
 				dstVal.Set(reflect.New(dstVal.Type().Elem()))
 			}

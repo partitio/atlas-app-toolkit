@@ -64,4 +64,8 @@ func TestMergeWithMask(t *testing.T) {
 		FieldA: childTest{FieldTwo: "catch"},
 	}, dest)
 	assert.Nil(t, err)
+
+	source.FieldA.FieldThree = nil
+	err = MergeWithMask(source, dest, &field_mask.FieldMask{Paths: []string{"FieldB.FieldOne", "FieldA.FieldTwo", "FieldA.FieldThree", "FieldB.FieldFour"}})
+	assert.NoError(t, err)
 }
